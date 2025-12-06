@@ -3,8 +3,14 @@ package com.FishOnBid.FishOnBid_Backend.controller;
 import com.FishOnBid.FishOnBid_Backend.entity.User;
 import com.FishOnBid.FishOnBid_Backend.repository.UserRepository;
 import com.FishOnBid.FishOnBid_Backend.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -15,15 +21,36 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/login")
-    public String login(@RequestBody User user) {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-        User exists = userRepository.findByEmail(user.getEmail());
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody User user) {
 
-        if (exists == null || !exists.getPassword().equals(user.getPassword())) {
-            return "Invalid credentials";
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            return ResponseEntity.badRequest().body("Email already exists");
         }
 
-        return jwtUtil.generateToken(user.getEmail());
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // hash password
+        user.setRole("user");
+
+        return ResponseEntity.ok(userRepository.save(user));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+
+        String token = request.getHeader("Authorization");
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("No token provided");
+        }
+
+        String jwt = token.substring(7);
+        String email = jwtUtil.extractEmail(jwt);
+
+        User user = userRepository.findByEmail(email);
+
+        return ResponseEntity.ok(user);
     }
 }

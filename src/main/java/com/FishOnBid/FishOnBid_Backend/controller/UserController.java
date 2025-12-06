@@ -4,6 +4,7 @@ import com.FishOnBid.FishOnBid_Backend.dto.UserDTO;
 import com.FishOnBid.FishOnBid_Backend.entity.User;
 import com.FishOnBid.FishOnBid_Backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,16 +17,19 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/test")
     public String testApi() {
         return "API is working fine!";
     }
 
     @PostMapping("/add")
-    public String addUser(@RequestBody UserDTO dto) {
-        User user = new User(dto.getName(), dto.getEmail(), dto.getPassword(), dto.getRole());
-        userRepository.save(user);
-        return "User added successfully!";
+    public User addUser(@RequestBody User user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
     @GetMapping("/all")
