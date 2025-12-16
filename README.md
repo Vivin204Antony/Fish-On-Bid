@@ -4,7 +4,7 @@ This repository follows a **clean two-branch strategy** to clearly separate fron
 
 ---
 
-## 📌 Branch Overview
+##  Branch Overview
 
 | Branch Name  | Purpose                                                |
 | ------------ | ------------------------------------------------------ |
@@ -16,7 +16,7 @@ This repository follows a **clean two-branch strategy** to clearly separate fron
 
 ---
 
-## 🧠 Why This Structure?
+##  Why This Structure?
 
 * Frontend and Backend were developed **independently**
 * Each has its **own Git history**
@@ -26,7 +26,7 @@ This repository follows a **clean two-branch strategy** to clearly separate fron
 
 ---
 
-## 📂 Code Location
+##  Code Location
 
 ### Frontend
 
@@ -48,7 +48,7 @@ This repository follows a **clean two-branch strategy** to clearly separate fron
 
 ---
 
-## 🔁 Switching Between Branches
+##  Switching Between Branches
 
 ```bash
 git checkout frontend   # Access frontend code
@@ -57,14 +57,14 @@ git checkout backend    # Access backend code
 
 ---
 
-## 🗑️ Deleted / Removed Branches
+##  Deleted / Removed Branches
 
 * Any temporary or unused branches (e.g., `main`, `master`) have been **safely deleted**
 * This was done to keep the repository **clean and understandable**
 
 ---
 
-## 🚫 Important Notes
+##  Important Notes
 
 * Do NOT merge `frontend` and `backend` branches
 * Do NOT reinitialize Git inside subfolders
@@ -73,14 +73,14 @@ git checkout backend    # Access backend code
 
 ---
 
-## 👨‍💻 Project Owner
+##  Project Owner
 
 **Fish-On-Bid** – Antony Vivin S 
 (Empowering rural communities through modern digital auction technology.)
 
 ---
 
-## 📌 Future Developers
+##  Future Developers
 
 If you are new to this repository:
 
@@ -92,4 +92,4 @@ This structure ensures **clarity, scalability, and maintainability**.
 
 ---
 
-✅ Repository is intentionally structured this way.
+Repository is intentionally structured this way.
