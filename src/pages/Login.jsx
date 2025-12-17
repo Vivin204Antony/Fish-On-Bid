@@ -34,8 +34,12 @@ export default function Login() {
       setMessage("✅ Login successful!");
 
       navigate("/dashboard");
-    } catch (error) {
-      setMessage("❌ Server error");
+    } catch (err) {
+      if (!navigator.onLine) {
+        setMessage("❌ You are offline. Please check your connection.");
+      } else {
+        setMessage("❌ Server error. Try again later.");
+      }
     }
   };
 
