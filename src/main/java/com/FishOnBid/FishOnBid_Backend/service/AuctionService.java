@@ -23,6 +23,13 @@ public class AuctionService {
         Auction auction = auctionRepo.findByIdForUpdate(auctionId)
                 .orElseThrow(() -> new RuntimeException("Auction not found"));
 
+        // ⛔ Auto-close check
+        if (LocalDateTime.now().isAfter(auction.getEndTime())) {
+            auction.setActive(false);
+            auctionRepo.save(auction);
+            throw new RuntimeException("Auction has ended");
+        }
+
         if (!auction.isActive()) {
             throw new RuntimeException("Auction is closed");
         }
@@ -44,4 +51,5 @@ public class AuctionService {
 
         return bid;
     }
+
 }
