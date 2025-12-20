@@ -1,17 +1,19 @@
 package com.FishOnBid.FishOnBid_Backend.service;
 
-import com.FishOnBid.FishOnBid_Backend.entity.Auction;
-import com.FishOnBid.FishOnBid_Backend.entity.Bid;
-import com.FishOnBid.FishOnBid_Backend.repository.AuctionRepository;
-import com.FishOnBid.FishOnBid_Backend.repository.BidRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.FishOnBid.FishOnBid_Backend.entity.Auction;
+import com.FishOnBid.FishOnBid_Backend.entity.Bid;
+import com.FishOnBid.FishOnBid_Backend.repository.AuctionRepository;
+import com.FishOnBid.FishOnBid_Backend.repository.BidRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,11 @@ public class AuctionService {
 
     private final AuctionRepository auctionRepo;
     private final BidRepository bidRepo;
+
+    public Auction createAuction(Auction auction) {
+        auction.setActive(true);
+        return auctionRepo.save(auction);
+    }
 
     @Transactional
     public Bid closeAuctionAndSelectWinner(Long auctionId) {
@@ -89,7 +96,7 @@ public class AuctionService {
 
         Map<String, Object> summary = new HashMap<>();
         summary.put("auctionId", auction.getId());
-        summary.put("itemName", auction.getItemName());
+        summary.put("FishName", auction.getFishName());
         summary.put("status", auction.isActive() ? "ACTIVE" : "CLOSED");
         summary.put("totalBids", bids.size());
         summary.put("currentPrice", auction.getCurrentPrice());

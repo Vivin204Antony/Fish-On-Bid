@@ -27,22 +27,42 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    // ✅ Generate JWT
     public String generateToken(String email) {
         return Jwts.builder()
-                .subject(email)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // ✅ Extract email (subject)
     public String extractEmail(String token) {
-        Claims claims = Jwts.parser()
+        return extractAllClaims(token).getSubject();
+    }
+
+    // ✅ Validate token
+    public boolean isTokenValid(String token) {
+        try {
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // 🔐 Internal helpers
+    private boolean isTokenExpired(String token) {
+        return extractAllClaims(token)
+                .getExpiration()
+                .before(new Date());
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
-        return claims.getSubject();
     }
 }

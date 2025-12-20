@@ -44,13 +44,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auctions/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auctions/*/bid").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/auctions/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/auctions/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/auctions/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
