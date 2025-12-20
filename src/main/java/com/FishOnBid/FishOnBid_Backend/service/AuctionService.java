@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +19,29 @@ public class AuctionService {
 
     private final AuctionRepository auctionRepo;
     private final BidRepository bidRepo;
+
+    @Transactional
+    public Bid closeAuctionAndSelectWinner(Long auctionId) {
+
+        Auction auction = auctionRepo.findById(auctionId)
+                .orElseThrow(() -> new RuntimeException("Auction not found"));
+
+        if (!auction.isActive()) {
+            throw new RuntimeException("Auction already closed");
+        }
+
+        // Find highest bid
+        Bid winningBid = bidRepo
+                .findTopByAuctionIdOrderByAmountDesc(auctionId)
+                .orElseThrow(() -> new RuntimeException("No bids placed"));
+
+        // Close auction
+        auction.setActive(false);
+        auctionRepo.save(auction);
+
+        return winningBid;
+    }
+
 
     @Transactional
     public Bid placeBid(Long auctionId, double amount, String email) {
@@ -50,6 +76,41 @@ public class AuctionService {
         auctionRepo.save(auction);
 
         return bid;
+    }
+
+    public Map<String, Object> getAuctionSummary(Long auctionId) {
+
+        Auction auction = auctionRepo.findById(auctionId)
+                .orElseThrow(() -> new RuntimeException("Auction not found"));
+
+        List<Bid> bids = bidRepo.findByAuctionIdOrderByAmountDesc(auctionId);
+
+        Bid winningBid = bids.isEmpty() ? null : bids.get(0);
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("auctionId", auction.getId());
+        summary.put("itemName", auction.getItemName());
+        summary.put("status", auction.isActive() ? "ACTIVE" : "CLOSED");
+        summary.put("totalBids", bids.size());
+        summary.put("currentPrice", auction.getCurrentPrice());
+        summary.put("winningBid", winningBid);
+        summary.put("bidHistory", bids);
+
+        return summary;
+    }
+
+    public Auction getAuctionById(Long id) {
+        return auctionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Auction not found"));
+    }
+
+    public Bid getWinningBid(Long auctionId) {
+        return bidRepo.findTopByAuctionIdOrderByAmountDesc(auctionId)
+                .orElseThrow(() -> new RuntimeException("No bids found"));
+    }
+
+    public List<Bid> getBidHistory(Long auctionId) {
+        return bidRepo.findByAuctionIdOrderByAmountDesc(auctionId);
     }
 
 }
