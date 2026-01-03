@@ -6,13 +6,16 @@ import Auctions from "./pages/Auctions";
 import AuctionDetail from "./pages/AuctionDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+
 import OfflineBanner from "./components/OfflineBanner";
+import Header from "./components/Header";
 
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Header />
         <OfflineBanner />
         <Routes>
           <Route path="/login" element={<Login />} />
